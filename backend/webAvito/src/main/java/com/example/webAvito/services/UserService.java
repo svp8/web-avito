@@ -1,6 +1,7 @@
 package com.example.webAvito.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.example.webAvito.models.User;
 import com.example.webAvito.repos.UserRepo;
@@ -20,6 +21,9 @@ public class UserService  {
     }
     public List<User> getAll(){
         return userRepo.findAll();
+    }
+    public Optional<User> getById(int id){
+        return userRepo.findById(id);
     }
     public User checkLogin(User user) throws Exception{
         User userTemp=userRepo.findByEmail(user.getEmail());
