@@ -27,20 +27,26 @@
         <div class="found_inner">
           <div class="search">
             <p>Поиск</p>
-            <input class="searchAdd" type="text" placeholder="Поиск" />
+            <input
+              class="searchAdd"
+              v-model.lazy="keywords"
+              type="text"
+              placeholder="Поиск"
+              autofocus
+            />
           </div>
-
           <div class="categories">
             <p>Категория</p>
             <select
               class="selectCase"
+              v-model="category"
               name="sel"
               placeholder="Выберите категорию"
             >
-              <option value="0">Все категории</option>
-              <option value="1">Вещи для дома</option>
-              <option value="2">Автомобили</option>
-              <option value="3">Детские игрушки</option>
+              <option value="">Все категории</option>
+              <option value="home">Вещи для дома</option>
+              <option value="car">Автомобили</option>
+              <option value="toys">Детские игрушки</option>
             </select>
           </div>
 
@@ -64,6 +70,9 @@
                   placeholder="Максимальная цена"
                 />
               </div>
+              <form>
+                <input class="searchbut" type="button" value=" " @click="fetch" />
+              </form>
             </div>
           </div>
         </div>
@@ -71,24 +80,22 @@
     </div>
 
     <!-- Тут будут объявления !-->
-    
-        <div class="cards">
-          <div v-for="item in cards" :key="item.id" class="card">
-            <img class="image" src="../assets/vaz2109.jpg" alt="img"/>
-            <div class="card__footer">
-              <span class="card__footer__title">{{ item.title }}</span>
-            <span class="card__footer__price">{{ item.price }} руб.</span>
-            <span class="card__footer__date">{{ item.date }} </span>
-            </div>
-            
-          </div>
+
+    <div class="cards">
+      <div v-for="item in cardsSearch" :key="item.id" class="card">
+        <img class="image" src="../assets/vaz2109.jpg" alt="img" />
+        <div class="card__footer">
+          <span class="card__footer__title">{{ item.title }}</span>
+          <span class="card__footer__price">{{ item.price }} руб.</span>
+          <span class="card__footer__date">{{ item.date }} </span>
         </div>
-      
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { getAllPosts } from '@/api/getAllPosts';
+import { getAllPosts } from "@/api/getAllPosts";
 export default {
   data() {
     return {
@@ -97,7 +104,7 @@ export default {
           id: 1,
           title: "test1",
           user_id: 5,
-          category: "test",
+          category: "Автомобили",
           description: "test",
           price: 123,
           photo: "../assets/vaz2109.jpg",
@@ -107,7 +114,7 @@ export default {
           id: 1,
           title: "test1",
           user_id: 5,
-          category: "test",
+          category: "home",
           description: "test",
           price: 123,
           photo: "test",
@@ -117,26 +124,59 @@ export default {
           id: 1,
           title: "Машина для дущи",
           user_id: 5,
-          category: "test",
+          category: "car",
           description: "test",
           price: 123000,
           photo: "test",
           date: "12/12/12",
         },
       ],
+      cardsSearch:[],
+      keywords: null,
+      results: [],
     };
   },
-  methods:{
-    async loadCards(){
-      let response= await getAllPosts();
-      response=await response.json()
-      console.log(response);
-      this.cards=response;
-    }
+  
+
+  methods: {
+    async loadCards() {
+      // let response = await getAllPosts();
+      // response = await response.json();
+      // console.log(response);
+      // this.cards = response;
+      this.cardsSearch=this.cards;
+    },
+    fetch() {
+      // axios.get({ params: { keywords: this.keywords } })
+      //     .then(response => this.results = reponse.data)
+      //     .catch(error => {});
+      if (this.cardsSearch==null){
+        this.cardsSearch=this.cards;
+      }
+      else{
+         this.cardsSearch=this.cards.filter((item)=>
+        item.title.toLowerCase().includes(this.keywords.toLowerCase())
+      )
+      }
+      console.log(test);
+      switch(this.category){
+        case "home": 
+        this.cardsSearch=this.cardsSearch.filter((item)=>
+        item.category==home); break;
+        case "car": 
+        tthis.cardsSearch=this.cardsSearch.filter((item)=>
+        item.category==car); break;
+        case "toy":
+        this.cardsSearch=this.cardsSearch.filter((item)=>
+        item.category==toy); break;
+        default: break;
+      }
+    },
+
   },
-  created(){
+  created() {
     this.loadCards();
-  }
+  },
 };
 </script>
 
@@ -178,6 +218,15 @@ body {
   width: 30%;
   height: 100%;
   align-items: center;
+}
+.searchbut {
+  width: 50px;
+  height: 30px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin: 8px;
+  border: 2px solid #000000;
 }
 .buttonAdd {
   width: 250px;
@@ -293,31 +342,29 @@ body {
   padding: 4px;
   margin: 10px;
   width: 20%;
-  
+
   background-color: white;
- 
+
   color: black;
   text-align: center;
-  
 }
-.image{
-width: 100%;
-object-fit:cover;
-height: 150px;
-
+.image {
+  width: 100%;
+  object-fit: cover;
+  height: 150px;
 }
-.card__footer{
+.card__footer {
   text-align: start;
   display: flex;
   flex-direction: column;
 }
-.card__footer__title{
-color:orange;
+.card__footer__title {
+  color: orange;
 }
-.card__footer__price{
+.card__footer__price {
   font-weight: 600;
 }
-.card__footer__date{
+.card__footer__date {
   opacity: 0.5;
 }
 </style>
