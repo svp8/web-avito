@@ -23,7 +23,7 @@
  
  <style>
 body{
-  background-color: #A8B7AB;
+  background-color: #ffffff;
 }
 .title{
   margin-top:30px;
