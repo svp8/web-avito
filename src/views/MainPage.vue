@@ -12,8 +12,8 @@
             <button class="buttonAdd text_Buttons" type="button" name="button">
               Разместить объявление
             </button>
-            <button class="buttonLK" type="button" name="button"></button>
-            <button class="buttonOut text_Buttons" type="button" name="button">
+            <button class="buttonLK" type="button" @click="goToUserPage"></button>
+            <button class="buttonOut text_Buttons" type="button" @click="exit">
               Выйти
             </button>
           </nav>
@@ -104,7 +104,7 @@ export default {
           date: "12/12/12",
         },
         {
-          id: 1,
+          id: 2,
           title: "test1",
           user_id: 5,
           category: "test",
@@ -114,7 +114,7 @@ export default {
           date: "12/12/12",
         },
         {
-          id: 1,
+          id: 3,
           title: "Машина для дущи",
           user_id: 5,
           category: "test",
@@ -127,6 +127,12 @@ export default {
     };
   },
   methods:{
+    exit(){
+      this.$router.push({'path':'login'})
+    },
+    goToUserPage(){
+      this.$router.push({'path':'profile'})
+    },
     async loadCards(){
       let response= await getAllPosts();
       response=await response.json()

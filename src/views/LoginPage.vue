@@ -42,6 +42,7 @@ export default {
       let response = await checkLogin(this.email, this.password);
       if (response.ok) {
         let user=await response.json();
+        this.$store.commit('SET_USER',user);
         console.log(user);
         this.$router.push({name:"main"})
       }
