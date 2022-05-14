@@ -13,6 +13,7 @@ export const user = {
   mutations: {
     SET_USER: (state, payload) => {
       const userObj = {
+        id:payload.id,
         name: payload.name,
         email: payload.email,
         phone: payload.phone,
@@ -21,6 +22,9 @@ export const user = {
       };
       localStorage.setItem('user', JSON.stringify(userObj));
       state.user = userObj || null;
+    },
+    SET_PHOTO:(state, payload) => {
+      state.user.photo = payload || null;
     },
   },
 

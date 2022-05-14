@@ -23,7 +23,7 @@ export default {
     this.$router.push({ name: "login" });
   },
   goToUserPage() {
-    this.$router.push({ name: "profile" });
+    this.$router.push({ name: "user" });
   },
   goToMainPage() {
     this.$router.push({ name: "main" });

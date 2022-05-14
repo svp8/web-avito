@@ -1,25 +1,6 @@
 <template>
   <div>
-    <header>
-      <div class="conteiner">
-        <div class="header_inner">
-          <div class="header_logo">
-            <img class="img_Logo" src="../assets/mainLogo.png" alt="" />
-            <p class="text_Logo">Воронка</p>
-          </div>
-
-          <nav class="header_nav">
-            <button class="buttonAdd text_Buttons" type="button" name="button">
-              Разместить объявление
-            </button>
-            <button class="buttonLK" type="button" @click="goToUserPage"></button>
-            <button class="buttonOut text_Buttons" type="button" @click="exit">
-              Выйти
-            </button>
-          </nav>
-        </div>
-      </div>
-    </header>
+    <Header/>
 
     <!-- Тут будет поисковик и фильтры !-->
     <div class="found">
@@ -46,7 +27,7 @@
               <option value="">Все категории</option>
               <option value="home">Вещи для дома</option>
               <option value="car">Автомобили</option>
-              <option value="toys">Детские игрушки</option>
+              <option value="toy">Детские игрушки</option>
             </select>
           </div>
 
@@ -56,6 +37,7 @@
               <div class="countStart">
                 <p>от</p>
                 <input
+                  v-model="minPrice"
                   class="countStart_End"
                   type="text"
                   placeholder="Минимальная цена"
@@ -65,13 +47,19 @@
               <div class="countEnd">
                 <p>до</p>
                 <input
+                  v-model="maxPrice"
                   class="countStart_End"
                   type="text"
                   placeholder="Максимальная цена"
                 />
               </div>
               <form>
-                <input class="searchbut" type="button" value=" " @click="fetch" />
+                <input
+                  class="searchbut"
+                  type="button"
+                  value="Поиск"
+                  @click="fetch"
+                />
               </form>
             </div>
           </div>
@@ -82,8 +70,8 @@
     <!-- Тут будут объявления !-->
 
     <div class="cards">
-      <div v-for="item in cardsSearch" :key="item.id" class="card">
-        <img class="image" src="../assets/vaz2109.jpg" alt="img" />
+      <div v-for="item in cardsSearch" :key="item.id" class="card" @click="goToPost(item.id)">
+        <img class="image" :src="require('@/assets/' + item.photo)" alt="img" />
         <div class="card__footer">
           <span class="card__footer__title">{{ item.title }}</span>
           <span class="card__footer__price">{{ item.price }} руб.</span>
@@ -96,84 +84,63 @@
 
 <script>
 import { getAllPosts } from "@/api/getAllPosts";
+import Header from "../components/Header.vue";
 export default {
   data() {
     return {
-      cards: [
-        {
-          id: 1,
-          title: "test1",
-          user_id: 5,
-          category: "Автомобили",
-          description: "test",
-          price: 123,
-          photo: "../assets/vaz2109.jpg",
-          date: "12/12/12",
-        },
-        {
-          id: 2,
-          title: "test1",
-          user_id: 5,
-          category: "home",
-          description: "test",
-          price: 123,
-          photo: "test",
-          date: "12/12/12",
-        },
-        {
-          id: 3,
-          title: "Машина для дущи",
-          user_id: 5,
-          category: "car",
-          description: "test",
-          price: 123000,
-          photo: "test",
-          date: "12/12/12",
-        },
-      ],
-      cardsSearch:[],
+      cards: [],
+      cardsSearch: [],
       keywords: null,
       results: [],
+      category: "",
+      minPrice:0,
+      maxPrice:10000,
     };
   },
-  methods:{
-    exit(){
-      this.$router.push({'path':'login'})
+  components: {
+    Header,
+  },
+  methods: {
+    goToPost(postId){
+      this.$router.push({ path: `/post/${postId}` })
     },
-    goToUserPage(){
-      this.$router.push({'path':'profile'})
-    },
-    async loadCards(){
-      let response= await getAllPosts();
-      response=await response.json()
+    async loadCards() {
+      let response = await getAllPosts();
+      response = await response.json();
       console.log(response);
-      this.cards=response;
+      this.cards = response;
+      this.cardsSearch = response;
     },
-  fetch() {
-      // axios.get({ params: { keywords: this.keywords } })
-      //     .then(response => this.results = reponse.data)
-      //     .catch(error => {});
-      if (this.cardsSearch==null){
-        this.cardsSearch=this.cards;
+    fetch() {
+      if (this.keywords == null) {
+        this.cardsSearch = this.cards;
+      } else  {
+        this.cardsSearch = this.cards.filter((item) =>
+          item.title.toLowerCase().includes(this.keywords.toLowerCase())
+        );
       }
-      else{
-         this.cardsSearch=this.cards.filter((item)=>
-        item.title.toLowerCase().includes(this.keywords.toLowerCase())
-      )
-      }
-      console.log(test);
-      switch(this.category){
-        case "home": 
-        this.cardsSearch=this.cardsSearch.filter((item)=>
-        item.category==home); break;
-        case "car": 
-        tthis.cardsSearch=this.cardsSearch.filter((item)=>
-        item.category==car); break;
+      switch (this.category) {
+        case "home":
+          this.cardsSearch = this.cardsSearch.filter(
+            (item) => item.category == "home"
+          );
+          break;
+        case "car":
+          this.cardsSearch = this.cardsSearch.filter(
+            (item) => item.category == "car"
+          );
+          break;
         case "toy":
-        this.cardsSearch=this.cardsSearch.filter((item)=>
-        item.category==toy); break;
-        default: break;
+          this.cardsSearch = this.cardsSearch.filter(
+            (item) => item.category == "toy"
+          );
+          break;
+        default:
+          break;
       }
+      this.cardsSearch = this.cardsSearch.filter(
+            (item) => item.price >=this.minPrice&&item.price <=this.maxPrice
+          );
     },
   },
   created() {
@@ -209,6 +176,7 @@ body {
   display: flex;
   justify-content: space-between;
   height: 45px;
+  cursor:pointer;
 }
 .text_Logo {
   font-size: 25px;
@@ -235,8 +203,10 @@ body {
   height: 38px;
   background: #f6e27f;
   border-radius: 10px;
+  cursor:pointer;
 }
 .buttonLK {
+cursor:pointer;
   width: 35px;
   height: 35px;
   border-radius: 35px;
@@ -245,6 +215,7 @@ body {
   background-position: center;
 }
 .buttonOut {
+  cursor:pointer;
   width: 82px;
   height: 38px;
   background: #f6e27f;
@@ -282,10 +253,10 @@ body {
 }
 .searchAdd {
   margin-left: 10%;
-  width: 405px;
+  width: 370px;
   height: 52px;
   background: #ffffff;
-  border: 2px solid #000000;
+  border: 0.5px solid #000000;
   box-sizing: border-box;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
   border-radius: 17px;
@@ -300,7 +271,7 @@ body {
   height: 52px;
 
   background: #ffffff;
-  border: 2px solid #000000;
+  border: 0.5px solid #000000;
   box-sizing: border-box;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
   border-radius: 17px;
@@ -323,7 +294,7 @@ body {
 }
 .countStart_End {
   background: #ffffff;
-  border: 2px solid #000000;
+  border: 0.5px solid #000000;
   box-sizing: border-box;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.25);
   border-radius: 17px;
@@ -337,7 +308,7 @@ body {
 .cards {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  /* justify-content: space-around; */
   flex-wrap: wrap;
 }
 .card {

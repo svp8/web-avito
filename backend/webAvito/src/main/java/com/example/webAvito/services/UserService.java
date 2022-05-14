@@ -13,6 +13,19 @@ public class UserService  {
     @Autowired
     UserRepo userRepo;
 
+    public User updateUser(User user) throws Exception{
+        User user1=userRepo.findByEmail(user.getEmail());
+        user1.setEmail(user.getEmail());
+        user1.setName(user.getName()); 
+        user1.setPhone(user.getPhone());
+        return userRepo.save(user1);
+    }
+    public User updateUserPhoto(String filename,int id) {
+        User user1=userRepo.findById(id).get();
+        user1.setPhoto(filename);
+        return userRepo.save(user1);
+    }
+
     public User registerUser(User user) throws Exception{
         if(userRepo.findByEmail(user.getEmail())==null){
             return userRepo.save(user);
