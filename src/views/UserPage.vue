@@ -5,25 +5,28 @@
       <p class="Zagalovok">Личный кабинет</p>
       <div class="circle"><img class="avatar" :src="require('@/assets/'+photo)"></div>
       <input class="edit--photo" type="file" @change="changePhoto" />
-      <button class="edituser">Редактировать профиль</button>
+      <button @click="editUser" class="edituser">Редактировать профиль</button>
       <p class="tel">Телефон:</p>
       <textarea
         v-model="phone"
         class="tel1"
         placeholder="Введите новый телефон"
+        :disabled="!isEditing"
       ></textarea>
-      <p class="fam">ФИО:</p>
-      <textarea class="fam1" v-model="name" placeholder="Введите новую фамилию"></textarea>
+      <p class="fam">Имя:</p>
+      <textarea class="fam1" v-model="name" placeholder="Введите новое имя" :disabled="!isEditing"></textarea>
       <p class="pocht">Почта:</p>
       <textarea
         v-model="email"
         class="pocht1"
         placeholder="Введите новый адрес эл.почты"
+        :disabled="!isEditing"
       ></textarea>
     </div>
-    <div>
+    <div class="posts_and_messages">
+    <div class="posts">
       <p class="obiav">Мои объявления</p>
-      <div class="cards">
+      <div class="cards box">
         <div v-for="item in cards" :key="item.id" class="card">
           <img class="image" :src="require('@/assets/'+item.photo)" alt="img" />
           <div class="card__footer">
@@ -34,12 +37,31 @@
         </div>
       </div>
     </div>
+    <div class="messages">
+      <p class="obiav">Отклики на объявления</p>
+      <div class="messages__box">
+        <div class="message" v-for="item in messages" :key="item.id">
+          <div class="message__header">
+            <h3 class="message__post">Объявление: {{getPost(item.postId).title}}</h3>
+            <h5 class="message__sender">От: {{item.userName}}</h5>
+          </div>
+          <div class="message__body">
+            <p>{{item.message}}</p>
+            <p class="message__body__date">Отправлено: {{item.date}}</p>
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  
   </div>
 </template>
 <script>
 import Header from "../components/Header.vue";
 import { getAllPostsById } from "@/api/getAllPosts";
 import { changePhoto } from "@/api/photo";
+import { getAllMessagesByUserId } from "@/api/message";
+import { updateUser } from "@/api/register";
 export default {
   data() {
     return {
@@ -49,12 +71,20 @@ export default {
       photo: "",
       userId: 0,
       cards: [],
+      messages:[],
+      isEditing:false,
     };
   },
   components: {
     Header,
   },
+  computed:{
+    
+  },
   methods: {
+    getPost(id){
+      return this.cards.filter((item)=>item.id==id)[0];
+    },
     async changePhoto(event) {
       let file = event.target.files[0];
       let formData = new FormData();
@@ -72,10 +102,36 @@ export default {
       }
       
     },
+    async editUser() {
+      if(this.isEditing===true){
+        try {
+        let response=await updateUser({
+          email:this.email,
+          name:this.name,
+          id:this.userId,
+          phone:this.phone,
+        });
+        response=await response.json();
+        this.$store.dispatch('GET_USER',response);
+        this.isEditing=false;
+      } catch (error) {
+        console.log(error)
+      }
+      }
+      else{
+        this.isEditing=true;
+      }
+      
+      
+    },
     async getCards() {
       let response = await getAllPostsById(this.userId);
       this.cards = await response.json();
-      console.log(this.cards);
+    },
+    async getMessages() {
+      let response = await getAllMessagesByUserId(this.userId);
+      this.messages = await response.json();
+      console.log(this.messages);
     },
   },
   async created() {
@@ -85,17 +141,58 @@ export default {
     this.name = user.name;
     this.photo = user.photo;
     this.userId = user.id;
-    await this.getCards();
-    // let response=await checkLogin('test','123');
-    // this.cards=await response.json();
-    // this.email=this.cards.email;
-    // response=await getAllPostsById(this.cards.id);
-    // this.cards=await response.json();
-    // console.log(this.cards);
+    try {
+      await this.getCards();
+      await this.getMessages();
+    } catch (error) {
+      console.log(error)
+    }
   },
 };
 </script>
-<style>
+<style scoped>
+.posts_and_messages{
+  padding:7px;
+  display: flex;
+  flex-direction: row;
+}
+.posts,messages{
+  flex:1;
+}
+h3,h5{
+  margin:0;
+}
+.box{
+  border:1px solid grey;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+.messages__box{
+  /* border:1px solid green; */
+  display:flex;
+  flex-direction: column;
+}
+.message{
+  text-align: left;
+  /* border:0.5px solid grey; */
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  margin-bottom: 7px;
+}
+.message__header{
+  padding:7px;
+  border-bottom: 0.5px solid rgb(200, 196, 196);
+  color:rgb(71, 210, 148);
+}
+.message__body{
+  padding:7px;
+}
+.message__body__date{
+  opacity: 0.5;
+  font-size: 8px;
+}
+.message__sender{
+  opacity: 0.5;
+}
 .user_container {
   position: relative;
   height: 500px;
@@ -126,6 +223,7 @@ export default {
   line-height: 61px;
   margin: 0px;
   color: #000000;
+  text-align: left;
 }
 .edituser {
   position: absolute;

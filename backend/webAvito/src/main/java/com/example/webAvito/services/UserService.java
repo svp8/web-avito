@@ -14,7 +14,7 @@ public class UserService  {
     UserRepo userRepo;
 
     public User updateUser(User user) throws Exception{
-        User user1=userRepo.findByEmail(user.getEmail());
+        User user1=userRepo.findById(user.getId()).get();
         user1.setEmail(user.getEmail());
         user1.setName(user.getName()); 
         user1.setPhone(user.getPhone());
@@ -28,6 +28,7 @@ public class UserService  {
 
     public User registerUser(User user) throws Exception{
         if(userRepo.findByEmail(user.getEmail())==null){
+            user.setPhoto("lk_image.png");
             return userRepo.save(user);
         }
         throw new Exception("Already exist");

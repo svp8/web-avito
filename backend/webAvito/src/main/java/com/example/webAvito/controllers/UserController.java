@@ -40,6 +40,15 @@ public class UserController  {
         }
         
     }
+    @PostMapping("/update")
+    public User updateUser(@RequestBody User user){
+        try {
+            return userService.updateUser(user);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exist" );
+        }
+        
+    }
     @PostMapping("/login")
     public User loginUser(@RequestBody User user){
         try {

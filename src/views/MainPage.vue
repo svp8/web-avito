@@ -314,7 +314,7 @@ cursor:pointer;
 .card {
   padding: 4px;
   margin: 10px;
-  width: 20%;
+  width: 250px;
 
   background-color: white;
 

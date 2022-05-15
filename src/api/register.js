@@ -13,3 +13,12 @@ export const register = async (email, password) => {
         body: JSON.stringify(user),
     });
 }
+export const updateUser = async (user) => {
+    return fetch(url + "/user/update", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+        },
+        body: JSON.stringify(user),
+    });
+}

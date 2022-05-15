@@ -45,8 +45,10 @@
       <div class="post__answer">
         <h2>Отправить сообщение продавцу</h2>
         <div class="flex-down">
-          <textarea class="post__message"> </textarea>
-          <button class="post__button"> Отправить сообщение</button>
+          <textarea v-model="message" class="post__message"> </textarea>
+          <button class="post__button" @click="sendMessage">
+            Отправить сообщение
+          </button>
         </div>
       </div>
     </div>
@@ -57,6 +59,7 @@
 import Header from "../components/Header.vue";
 import { getAllPosts } from "@/api/getAllPosts";
 import { getUserById } from "@/api/getUserById";
+import { createMessage } from "@/api/message";
 export default {
   data() {
     return {
@@ -66,10 +69,16 @@ export default {
       photo: "",
       user: {},
       card: {},
+      message: "",
     };
   },
   components: {
     Header,
+  },
+  computed: {
+    currentUser() {
+      return this.$store.getters.USER;
+    },
   },
   methods: {
     async loadCards() {
@@ -84,7 +93,29 @@ export default {
       response1 = await response1.json();
       this.user = response1;
     },
+    async sendMessage() {
+      if (this.message !== "") {
+        const date = new Date().toLocaleString();
+        const user=this.currentUser;
+        try {
+          let response = await createMessage({
+            'postId': this.card.id,
+            'userIdFrom': user.id,
+            'userIdTo': this.card.user_id,
+            'message': this.message,
+            'userName':user.name,
+            'date': date,
+          });
+          response = await response.json();
+          console.log(response);
+          alert("Сообщение отправлено");
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    },
   },
+  
   async created() {
     await this.loadCards();
     await this.getUser();
@@ -93,13 +124,13 @@ export default {
 </script>
 
 <style>
-.flex-down{
-    display: flex;
-    flex-direction: column;
+.flex-down {
+  display: flex;
+  flex-direction: column;
 }
 .post__container {
   display: flex;
-  padding:7px;
+  padding: 7px;
   flex-direction: row;
   justify-content: space-evenly;
 }
@@ -118,16 +149,16 @@ export default {
   width: 200px;
   margin-left: 7px;
 }
-.post__message{
-    height: 300px;
+.post__message {
+  height: 300px;
   margin-bottom: 7px;
 }
-.post__button{
-    color:white;
-    background-color: green;
-    margin-bottom: 15px;
-    border:0;
-    padding: 7px;
+.post__button {
+  color: white;
+  background-color: green;
+  margin-bottom: 15px;
+  border: 0;
+  padding: 7px;
 }
 .post__image {
   margin-top: 20px;
