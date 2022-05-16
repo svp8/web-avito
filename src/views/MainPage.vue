@@ -185,7 +185,7 @@ body {
 .header_nav {
   display: flex;
   justify-content: space-around;
-  width: 30%;
+ 
   height: 100%;
   align-items: center;
 }
@@ -199,9 +199,9 @@ body {
   border: 2px solid #000000;
 }
 .buttonAdd {
-  width: 250px;
+  
   height: 38px;
-  background: #f6e27f;
+  
   border-radius: 10px;
   cursor:pointer;
 }
@@ -218,7 +218,7 @@ cursor:pointer;
   cursor:pointer;
   width: 82px;
   height: 38px;
-  background: #f6e27f;
+  background: #fe0909;
   border-radius: 10px;
 }
 .text_Buttons {
@@ -315,7 +315,7 @@ cursor:pointer;
   padding: 4px;
   margin: 10px;
   width: 250px;
-
+cursor: pointer;
   background-color: white;
 
   color: black;

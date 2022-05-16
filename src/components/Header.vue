@@ -5,7 +5,10 @@
       <p class="text_Logo">Воронка</p>
     </div>
     <nav class="header_nav">
-      <button class="buttonAdd text_Buttons" type="button">
+      <button @click="goToAboutPage" class="buttonAdd about text_Buttons about" type="button">
+        О нас
+      </button>
+      <button class="buttonAdd create text_Buttons" type="button">
         Разместить объявление
       </button>
       <button class="buttonLK" type="button" @click="goToUserPage"></button>
@@ -18,20 +21,28 @@
 
 <script>
 export default {
-    methods:{
-        exit() {
-    this.$router.push({ name: "login" });
+  methods: {
+    exit() {
+      this.$router.push({ name: "login" });
+    },
+    goToUserPage() {
+      this.$router.push({ name: "user" });
+    },
+    goToMainPage() {
+      this.$router.push({ name: "main" });
+    },
+     goToAboutPage() {
+      this.$router.push({ name: "about" });
+    },
   },
-  goToUserPage() {
-    this.$router.push({ name: "user" });
-  },
-  goToMainPage() {
-    this.$router.push({ name: "main" });
-  },
-    }
-  
 };
 </script>
 
 <style>
+.about {
+  background-color: #e2d406;
+}
+.create {
+  background-color: rgb(8, 239, 8);
+}
 </style>
